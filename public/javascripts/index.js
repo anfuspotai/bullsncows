@@ -81,7 +81,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     if (i !== 0) boxInputs[i - 1].focus();
                 } else {
                     if (i === boxInputs.length - 1 && boxInputs[i].value !== '') {
-                        event.preventDefault();
+                        if (event.keyCode !== 13)
+                            event.preventDefault();
                         return true;
                     } else if ((event.keyCode > 47 && event.keyCode < 58) || (event.keyCode > 95 && event.keyCode < 106)) {
                         boxInputs[i].value = event.key;
