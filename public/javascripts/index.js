@@ -1,9 +1,44 @@
 var currentNumber = '1234'
 localStorage.count = localStorage.count || 0
 
+function info() {
+    Swal.fire({
+        title: 'How to play!',
+        text: `Try to guess the number within 9 tries. \n
+        If the matching digits are in their right positions, they are "bulls"🎯,\n
+        if in different positions, they are "cows"🐮.`,
+        icon: 'info',
+        confirmButtonText: `Let's Play`
+    })
+}
+
+function multiplayer() {
+    Swal.fire({
+        title: "Your challenge!",
+        text: "You'll get an encrypted link to share via whatsapp",
+        inputPlaceholder: "Write a non repeating 4 Digit number",
+        input: 'number',
+        showCancelButton: true,
+        confirmButtonText: `Proceed`
+    }).then((result) => {
+        let theResult = result.value || '';
+        const toFindDuplicates = arry => arry.filter((item, index) => arry.indexOf(item) !== index)
+       
+        if (theResult === '' || theResult.length !== 4)  failureAlert('Write a 4 digit number')
+        else if (toFindDuplicates(theResult.split('')).length > 0)  failureAlert('Write non repeating digits..')
+        else window.open(`/wa/${theResult}`,'_blank')
+    }).catch(err => console.log(err))
+}
+
+if (!localStorage.firstTime) {
+    info()
+    localStorage.firstTime = true
+}
+
 document.addEventListener("DOMContentLoaded", function (event) {
     if (localStorage.currentNumber) currentNumber = localStorage.currentNumber
     if (localStorage.guessHistory) $('#guessHistory').html(localStorage.guessHistory)
+    $('#first').focus();
 
     const boxInputs = document.querySelectorAll('#guessForm > *[id]');
     let guessBtn = document.getElementById('guessBtn')
@@ -107,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
         let count = parseInt(localStorage.count)
         if (count > 9) {
-            $('#guessHistory').append(`<li class="text-danger fw-bolder h3">${currentNumber} Better luck nt !!!</li>  `)
+            $('#guessHistory').prepend(`<li class="text-danger fw-bolder h3">${currentNumber} Better luck nt !!!</li>  `)
             localStorage.guessHistory = $('#guessHistory').html()
 
             $('.rounded').prop('disabled', true)
@@ -120,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
         if (guessNum === currentNumber) {
 
-            $('#guessHistory').append(`<li class="text-success fw-bolder h3">${guessNum} : [🎯 - 4] <3 !!!</li>  `)
+            $('#guessHistory').prepend(`<li class="text-success fw-bolder h3">${guessNum} : [🎯 - 4] <3 !!!</li>  `)
             localStorage.guessHistory = $('#guessHistory').html()
 
             $('.rounded').prop('disabled', true)
@@ -175,7 +210,7 @@ var getHint = function (secret, guess) {
         cows += Math.min(secretDigitCount[digit], (guessDigitCount[digit] || 0))
     }
 
-    $('#guessHistory').append(`<li class="fw-bold h5">${guess} : [🎯 - ${bulls}] [🐮 - ${cows}] </li>`)
+    $('#guessHistory').prepend(`<li class="fw-bold h5">${guess} : [🎯 - ${bulls}] [🐮 - ${cows}] </li>`)
     localStorage.guessHistory = $('#guessHistory').html()
     saveGuesses(guess)
 };

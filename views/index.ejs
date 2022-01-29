@@ -5,33 +5,40 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bull and Cows</title>
+  <link rel="shortcut icon" href="/favicon.ico">
+  <title>Bulls and Cows</title>
   <link rel='stylesheet' href='/stylesheets/style.css' />
   <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
 </head>
 
 <body>
 
-  <div class="container height-100 d-flex justify-content-center align-items-center">
+  <div class="container height-100 d-flex">
     <div class="position-relative">
       <div class="card p-2 text-center">
-        <form id="guessForm" class="inputs d-flex flex-row row justify-content-center mt-2">
-          <input class="m-2 text-center form-control rounded col-3" type="number" id="first" maxlength="1" />
-          <input class="m-2 text-center form-control rounded col-3" type="number" id="second" maxlength="1" />
-          <input class="m-2 text-center form-control rounded col-3" type="number" id="third" maxlength="1" />
-          <input class="m-2 text-center form-control rounded col-3" type="number" id="fourth" maxlength="1" />
+        <div class=" row justify-content-end px-2">
+          <i class="fas fa-user-friends h4 m-1 col-1" style="text-align: right !important;" onclick="multiplayer()"></i>
+          <i class="fas fa-info-circle h4 m-1 col-1" style="text-align: right !important;" onclick="info()"></i>
+        </div>
+        <form id="guessForm" class="inputs row justify-content-center mt-2">
+          <input class="form-control rounded col-3" type="number" id="first" maxlength="1" />
+          <input class="form-control rounded col-3" type="number" id="second" maxlength="1" />
+          <input class="form-control rounded col-3" type="number" id="third" maxlength="1" />
+          <input class="form-control rounded col-3" type="number" id="fourth" maxlength="1" />
           <div class="mt-2 col-12"> <button type="submit" id="guessBtn"
               class="btn btn-success px-4 rounded">Check</button> </div>
         </form>
         <hr>
-        <ol id="guessHistory">
+        <ol reversed id="guessHistory">
         </ol>
       </div>
     </div>
   </div>
 
-  <div class="footer">
+  <div class="footer" onclick="window.open(`https://github.com/anfuspotai/bullsncows`,'_blank')">
     4nfu5
   </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -43,6 +50,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"
     integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="/javascripts/index.js"></script>
 </body>
 
