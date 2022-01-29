@@ -1,3 +1,9 @@
+window.onload = function () {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("guessForm").style.display = "flex";
+
+}
+
 var currentNumber = '1234'
 localStorage.count = localStorage.count || 0
 
@@ -23,10 +29,10 @@ function multiplayer() {
     }).then((result) => {
         let theResult = result.value || '';
         const toFindDuplicates = arry => arry.filter((item, index) => arry.indexOf(item) !== index)
-       
-        if (theResult === '' || theResult.length !== 4)  failureAlert('Write a 4 digit number')
-        else if (toFindDuplicates(theResult.split('')).length > 0)  failureAlert('Write non repeating digits..')
-        else window.open(`/wa/${theResult}`,'_blank')
+
+        if (theResult === '' || theResult.length !== 4) failureAlert('Write a 4 digit number')
+        else if (toFindDuplicates(theResult.split('')).length > 0) failureAlert('Write non repeating digits..')
+        else window.open(`/wa/${theResult}`, '_blank')
     }).catch(err => console.log(err))
 }
 
