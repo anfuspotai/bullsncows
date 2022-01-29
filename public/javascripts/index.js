@@ -1,4 +1,5 @@
 var currentNumber = '1234'
+localStorage.count = localStorage.count || 0
 
 document.addEventListener("DOMContentLoaded", function (event) {
     if (localStorage.currentNumber) currentNumber = localStorage.currentNumber
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                         localStorage.guessHistory = ''
                         localStorage.guesses = ''
                         localStorage.inputStatus = 'Enabled'
+                        localStorage.count = 0
                         $('#guessHistory').html(``)
                     }
                 }
@@ -48,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 localStorage.guessHistory = ''
                 localStorage.guesses = ''
                 localStorage.inputStatus = 'Enabled'
+                localStorage.count = 0
                 $('#guessHistory').html(``)
             }
 
@@ -102,11 +105,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
     guessBtn.addEventListener('click', (event) => {
         event.preventDefault()
 
+        let count = parseInt(localStorage.count)
+        if (count > 9) {
+            $('#guessHistory').append(`<li class="text-danger fw-bolder h3">${currentNumber} Better luck nt !!!</li>  `)
+            localStorage.guessHistory = $('#guessHistory').html()
+
+            $('.rounded').prop('disabled', true)
+            localStorage.inputStatus = 'Disabled'
+
+            return failureAlert('You have reached the maximum amount of tries')
+        } else localStorage.count = count + 1
+
         let guessNum = `${guess1.value}${guess2.value}${guess3.value}${guess4.value}`
 
         if (guessNum === currentNumber) {
 
-            $('#guessHistory').append(`<li class="text-success">${guessNum} : [Bulls - 4] <3 !!!</li>`)
+            $('#guessHistory').append(`<li class="text-success fw-bolder h3">${guessNum} : [🎯 - 4] <3 !!!</li>  `)
             localStorage.guessHistory = $('#guessHistory').html()
 
             $('.rounded').prop('disabled', true)
@@ -161,7 +175,7 @@ var getHint = function (secret, guess) {
         cows += Math.min(secretDigitCount[digit], (guessDigitCount[digit] || 0))
     }
 
-    $('#guessHistory').append(`<li>${guess} : [Bulls - ${bulls}] [Cows - ${cows}] </li>`)
+    $('#guessHistory').append(`<li class="fw-bold h5">${guess} : [🎯 - ${bulls}] [🐮 - ${cows}] </li>`)
     localStorage.guessHistory = $('#guessHistory').html()
     saveGuesses(guess)
 };
