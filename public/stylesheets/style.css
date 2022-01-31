@@ -3,6 +3,7 @@ head {
   display: block;
   background: #123 !important;
 }
+
 /* 
 head::before,
 head::after,
@@ -96,10 +97,13 @@ input[type=number] {
   align-items: center;
 }
 
+.icon-btn {
+  cursor: pointer;
+}
+
 @media only screen and (max-width: 900px) {
   .container {
     padding-top: 10%;
-    justify-content: start;
     align-items: flex-start;
   }
 

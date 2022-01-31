@@ -7,6 +7,10 @@ router.get('/', function (req, res, next) {
   res.render('index')
 });
 
+router.get('/challenge', function (req, res, next) {
+  res.render('challenge')
+});
+
 router.get('/mp/:mp', function (req, res, next) {
   let params = req.params.mp
 
@@ -16,7 +20,7 @@ router.get('/mp/:mp', function (req, res, next) {
   if (toFindDuplicates(params.split('')).length > 0) return res.redirect(`/`)
 
   let encrypted = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(params));
-  res.redirect(`/?encrypt=${encrypted}`)
+  res.redirect(`/challenge?encrypt=${encrypted}`)
 });
 
 router.get('/wa/:mp', function (req, res, next) {
@@ -28,7 +32,7 @@ router.get('/wa/:mp', function (req, res, next) {
   if (toFindDuplicates(params.split('')).length > 0) return res.redirect(`/`)
 
   let encrypted = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(params));
-  res.redirect(`https://wa.me/?text=https://bulls.anfus.xyz/?encrypt=${encrypted}`)
+  res.redirect(`https://wa.me/?text=https://bulls.anfus.xyz/challenge?encrypt=${encrypted}`)
 });
 
 router.get('/getNumber', async function (req, res, next) {

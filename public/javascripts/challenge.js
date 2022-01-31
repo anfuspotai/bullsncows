@@ -1,19 +1,44 @@
+var currentNumber = '1234'
+localStorage.challengeVcount = localStorage.challengeVcount || 0
+
+
 window.onload = function () {
     document.getElementById("loading").style.display = "none";
     document.getElementById("guessForm").style.display = "flex";
 
-
-    var currentNumber = '1234'
-    localStorage.count = localStorage.count || 0
-
-
-    if (!localStorage.firstTime) {
+    if (!localStorage.challengeVfirstTime) {
         info()
-        localStorage.firstTime = true
+        localStorage.challengeVfirstTime = true
     }
 
-    if (localStorage.currentNumber) currentNumber = localStorage.currentNumber
-    if (localStorage.guessHistory) $('#guessHistory').html(localStorage.guessHistory)
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+
+    if (params.encrypt) {
+        try {
+            console.log('Decrypting the number...');
+            var decrypted = CryptoJS.enc.Base64.parse(params.encrypt).toString(CryptoJS.enc.Utf8);
+            if (localStorage.challengeVcurrentNumber != decrypted && decrypted.length === 4) {
+                localStorage.challengeVcurrentNumber = decrypted
+                currentNumber = localStorage.challengeVcurrentNumber
+                localStorage.challengeVguessHistory = ''
+                localStorage.challengeVguesses = ''
+                localStorage.challengeVinputStatus = 'Enabled'
+                localStorage.challengeVcount = 0
+                $('#guessHistory').html(``)
+            }
+
+        } catch (error) {
+            console.log('Decrypting failed...');
+            window.open('/', '_self')
+        }
+    } else {
+        window.open('/', '_self')
+    }
+
+    if (localStorage.challengeVcurrentNumber) currentNumber = localStorage.challengeVcurrentNumber
+    if (localStorage.challengeVguessHistory) $('#guessHistory').html(localStorage.challengeVguessHistory)
+
     $('#first').focus();
 
     const boxInputs = document.querySelectorAll('#guessForm > *[id]');
@@ -23,34 +48,7 @@ window.onload = function () {
     let guess3 = document.getElementById('third')
     let guess4 = document.getElementById('fourth')
 
-    function getNumber() {
-        fetch(`/getNumber`)
-            .then((response) => response.json())
-            .then((res) => {
-                if (!res.ok) {
-                    alert('Server unreachable')
-                } else {
-                    if (localStorage.currentNumber != res.currentNumber) {
-                        localStorage.currentNumber = res.currentNumber
-                        currentNumber = localStorage.currentNumber
-                        localStorage.guessHistory = ''
-                        localStorage.guesses = ''
-                        localStorage.inputStatus = 'Enabled'
-                        localStorage.count = 0
-                        $('#guessHistory').html(``)
-                    }
-                }
-            })
-            .catch((err) => {
-                console.log('Error fetching the number')
-                console.log(err)
-            });
-    }
-
-
-
-    getNumber()
-    if (localStorage.inputStatus === 'Disabled') {
+    if (localStorage.challengeVinputStatus === 'Disabled') {
         $('.rounded').prop('disabled', true)
         let temp = currentNumber.split('')
         guess1.value = temp[0]
@@ -58,58 +56,62 @@ window.onload = function () {
         guess3.value = temp[2]
         guess4.value = temp[3]
 
-    }
-
-
-    function guessInput() {
-        for (let i = 0; i < boxInputs.length; i++) {
-            boxInputs[i].addEventListener('keydown', function (event) {
-                if (event.key === "Backspace") {
-                    boxInputs[i].value = '';
-                    if (i !== 0) boxInputs[i - 1].focus();
-                } else {
-                    if (i === boxInputs.length - 1 && boxInputs[i].value !== '') {
-                        if (event.keyCode !== 13)
+    } else {
+        function guessInput() {
+            for (let i = 0; i < boxInputs.length; i++) {
+                boxInputs[i].addEventListener('keydown', function (event) {
+                    if (event.key === "Backspace") {
+                        boxInputs[i].value = '';
+                        if (i !== 0) boxInputs[i - 1].focus();
+                    } else {
+                        if (i === boxInputs.length - 1 && boxInputs[i].value !== '') {
+                            if (event.keyCode !== 13)
+                                event.preventDefault();
+                            return true;
+                        } else if ((event.keyCode > 47 && event.keyCode < 58) || (event.keyCode > 95 && event.keyCode < 106)) {
+                            boxInputs[i].value = event.key;
+                            if (i !== boxInputs.length - 1) boxInputs[i + 1].focus();
+                            // else $('#guessBtn').focus()
                             event.preventDefault();
-                        return true;
-                    } else if ((event.keyCode > 47 && event.keyCode < 58) || (event.keyCode > 95 && event.keyCode < 106)) {
-                        boxInputs[i].value = event.key;
-                        if (i !== boxInputs.length - 1) boxInputs[i + 1].focus();
-                        // else $('#guessBtn').focus()
-                        event.preventDefault();
-                    } else if ((event.keyCode > 57 && event.keyCode < 91) || (event.keyCode > 105 && event.keyCode < 112)) {
-                        event.preventDefault();
-                        return true;
+                        } else if ((event.keyCode > 57 && event.keyCode < 91) || (event.keyCode > 105 && event.keyCode < 112)) {
+                            event.preventDefault();
+                            return true;
+                        }
                     }
-                }
-            });
+                });
+            }
         }
+        guessInput();
     }
-    guessInput();
+
+
+   
+
+
 
     guessBtn.addEventListener('click', (event) => {
         event.preventDefault()
 
-        let count = parseInt(localStorage.count)
+        let count = parseInt(localStorage.challengeVcount)
         if (count >= 9) {
             $('#guessHistory').prepend(`<li class="text-danger fw-bolder h3">${currentNumber} Better luck nt !!!</li>  `)
-            localStorage.guessHistory = $('#guessHistory').html()
+            localStorage.challengeVguessHistory = $('#guessHistory').html()
 
             $('.rounded').prop('disabled', true)
-            localStorage.inputStatus = 'Disabled'
+            localStorage.challengeVinputStatus = 'Disabled'
 
             return failureAlert('You have reached the maximum amount of tries')
-        } else localStorage.count = count + 1
+        } else localStorage.challengeVcount = count + 1
 
         let guessNum = `${guess1.value}${guess2.value}${guess3.value}${guess4.value}`
 
         if (guessNum === currentNumber) {
 
             $('#guessHistory').prepend(`<li class="text-success fw-bolder h3">${guessNum} : [🎯 - 4] <3 !!!</li>  `)
-            localStorage.guessHistory = $('#guessHistory').html()
+            localStorage.challengeVguessHistory = $('#guessHistory').html()
 
             $('.rounded').prop('disabled', true)
-            localStorage.inputStatus = 'Disabled'
+            localStorage.challengeVinputStatus = 'Disabled'
             return successAlert('You Won')
 
         } else $('#guessForm').find('input').val('');
@@ -120,8 +122,8 @@ window.onload = function () {
         const toFindDuplicates = arry => arry.filter((item, index) => arry.indexOf(item) !== index)
         if (toFindDuplicates(guessNum.split('')).length > 0) return failureAlert('Duplicate number found')
 
-        if (localStorage.guesses) {
-            let temp = JSON.parse(localStorage.guesses)
+        if (localStorage.challengeVguesses) {
+            let temp = JSON.parse(localStorage.challengeVguesses)
             if (temp.includes(guessNum))
                 failureAlert("Try different number")
             else getHint(currentNumber, guessNum)
@@ -131,12 +133,14 @@ window.onload = function () {
 
 }
 
+
+
 function saveGuesses(data) {
     let temp = [];
-    if (localStorage.guesses)
-        temp = JSON.parse(localStorage.guesses)
+    if (localStorage.challengeVguesses)
+        temp = JSON.parse(localStorage.challengeVguesses)
     temp.push(data);
-    localStorage.guesses = JSON.stringify(temp);
+    localStorage.challengeVguesses = JSON.stringify(temp);
 }
 
 var getHint = function (secret, guess) {
@@ -161,11 +165,12 @@ var getHint = function (secret, guess) {
     }
 
     $('#guessHistory').prepend(`<li class="fw-bold h5">${guess} : [🎯 - ${bulls}] [🐮 - ${cows}] </li>`)
-    localStorage.guessHistory = $('#guessHistory').html()
+    localStorage.challengeVguessHistory = $('#guessHistory').html()
     saveGuesses(guess)
 };
 
 
+// Defined functions
 
 function info() {
     Swal.fire({
@@ -195,6 +200,8 @@ function multiplayer() {
         else window.open(`/wa/${theResult}`, '_blank')
     }).catch(err => console.log(err))
 }
+
+
 
 function toastNow(message, type = 'neutral') {
 
